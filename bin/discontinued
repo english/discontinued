@@ -6,6 +6,7 @@ require 'csv'
 
 class App
   include Methadone::Main
+  include Methadone::CLILogging
 
   main do |catalog, discontinued|
     disc_refs = []

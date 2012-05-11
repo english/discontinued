@@ -1,0 +1,60 @@
+#!/usr/bin/env ruby
+
+require 'optparse'
+require 'methadone'
+require 'csv'
+
+class App
+  include Methadone::Main
+
+  main do |catalog, discontinued|
+    disc_refs = []
+    CSV.foreach(discontinued, headers: true, header_converters: :symbol) do |row|
+      disc_refs << row[:ref]
+    end
+
+    our_refs = []
+    CSV.foreach(catalog, headers: true, header_converters: :symbol) do |row|
+      our_refs << row[:reference]
+    end
+
+    our_disc_refs = our_refs.find_all { |our_ref|
+      disc_refs.any? { |disc_ref| /^#{disc_ref}/ =~ our_ref }
+    }
+
+    output = CSV.generate { |csv|
+      csv << %w(ref cost retail disc)
+      csv << our_disc_refs.map { |ref| [ref, nil, nil, 'Y'] }
+    }
+
+    puts output
+  end
+
+  arg :catalog
+  arg :discontinued
+
+  # supplemental methods here
+
+  # Declare command-line interface here
+
+  # description "one line description of your app"
+  #
+  # Accept flags via:
+  # on("--flag VAL","Some flag")
+  # options[flag] will contain VAL
+  #
+  # Specify switches via:
+  # on("--[no-]switch","Some switch")
+  #
+  # Or, just call OptionParser methods on opts
+  #
+  # Require an argument
+  # arg :some_arg 
+  #
+  # # Make an argument optional
+  # arg :optional_arg, :optional
+
+  use_log_level_option
+
+  go!
+end

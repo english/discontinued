@@ -2,6 +2,7 @@
 
 require 'optparse'
 require 'methadone'
+require 'discontinued'
 require 'csv'
 
 class App
@@ -25,7 +26,9 @@ class App
 
     output = CSV.generate { |csv|
       csv << %w(ref cost retail disc)
-      csv << our_disc_refs.map { |ref| [ref, nil, nil, 'Y'] }
+      our_disc_refs.each do |ref|
+        csv << [ref, nil, nil, 'Y']
+      end
     }
 
     puts output
@@ -34,26 +37,7 @@ class App
   arg :catalog
   arg :discontinued
 
-  # supplemental methods here
-
-  # Declare command-line interface here
-
-  # description "one line description of your app"
-  #
-  # Accept flags via:
-  # on("--flag VAL","Some flag")
-  # options[flag] will contain VAL
-  #
-  # Specify switches via:
-  # on("--[no-]switch","Some switch")
-  #
-  # Or, just call OptionParser methods on opts
-  #
-  # Require an argument
-  # arg :some_arg 
-  #
-  # # Make an argument optional
-  # arg :optional_arg, :optional
+  version Discontinued::VERSION
 
   use_log_level_option
 
